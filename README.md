@@ -1,10 +1,5 @@
 # SecureFS
 
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi&logoColor=white)
-![Encryption](https://img.shields.io/badge/Encryption-AES--256-FF6B35?style=flat-square&logo=letsencrypt&logoColor=white)
-![License](https://img.shields.io/badge/License-Educational-blue?style=flat-square)
-
 A secure file storage system built with FastAPI. Files are encrypted before storage and decrypted only when accessed by an authenticated user.
 
 ---
