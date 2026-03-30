@@ -1,0 +1,79 @@
+# SecureFS
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Encryption](https://img.shields.io/badge/Encryption-AES--256-FF6B35?style=flat-square&logo=letsencrypt&logoColor=white)
+![License](https://img.shields.io/badge/License-Educational-blue?style=flat-square)
+
+A secure file storage system built with FastAPI. Files are encrypted before storage and decrypted only when accessed by an authenticated user.
+
+---
+
+## Features
+
+- Token-based user authentication
+- Server-side file encryption on upload
+- In-memory decryption on download (no plaintext written to disk)
+- File listing and deletion
+- Minimal web interface
+
+---
+
+## Tech Stack
+
+- **Backend:** FastAPI (Python 3.10+)
+- **Encryption:** `cryptography` library — Fernet (AES-128-CBC + HMAC-SHA256)
+- **Frontend:** HTML, CSS, JavaScript
+- **Server:** Uvicorn
+
+---
+
+## Project Structure
+
+```
+SecureFS/
+├── backend/
+│   ├── main.py
+│   ├── encryption.py
+│   └── routes.py
+├── frontend/
+│   ├── dashboard.html
+|   ├── index.html
+│   ├── login.html
+|   ├── script.js
+│   ├── signup.html
+│   └── style.css
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/CodeTitan7/SecureFS.git
+cd SecureFS
+
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+
+pip install -r requirements.txt
+uvicorn backend.main:app --reload
+```
+
+Open `http://127.0.0.1:8000` in your browser.
+
+---
+
+## API Reference
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/auth/login` | Get access token | No |
+| `POST` | `/files/upload` | Upload and encrypt a file | Yes |
+| `GET` | `/files/list` | List uploaded files | Yes |
+| `GET` | `/files/download/{filename}` | Download and decrypt a file | Yes |
+| `DELETE` | `/files/delete/{filename}` | Delete a file | Yes |
+
+Authenticated endpoints require `Authorization: Bearer <token>`.
