@@ -27,11 +27,11 @@ A secure file storage system built with FastAPI. Files are encrypted before stor
 
 ```
 SecureFS/
-├── backend/
+├── app/
+│   ├── crypto.py
 │   ├── main.py
-│   ├── encryption.py
-│   └── routes.py
-├── frontend/
+│   └── supabase_client.py
+├── static/
 │   ├── dashboard.html
 |   ├── index.html
 │   ├── login.html
