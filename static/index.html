@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureFS — Upload</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <span class="header-logo">SecureFS</span>
+    <nav class="header-nav">
+        <a href="index.html">Upload</a>
+        <a href="dashboard.html">Dashboard</a>
+        <span id="userEmail" style="color:var(--grey-400);font-family:var(--mono);font-size:11px;"></span>
+        <a href="#" onclick="logout()" style="color:var(--grey-600);">Sign Out</a>
+    </nav>
+</header>
+
+<div class="container">
+    <p class="page-label">Secure Upload</p>
+    <h1>Encrypt & Store</h1>
+
+    <div class="file-zone" id="fileZone">
+        <input type="file" id="fileInput" onchange="onFileChange(this)">
+        <span class="file-zone-icon">↑</span>
+        <span class="file-zone-label">Drop file or click to browse</span>
+        <p class="file-zone-sub">All file types supported</p>
+    </div>
+    <div id="fileName"></div>
+
+    <div class="divider"></div>
+
+    <button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()">
+        Encrypt & Upload
+    </button>
+
+    <p id="status"></p>
+
+    <a href="dashboard.html" class="footer-link">View Dashboard →</a>
+</div>
+
+<script src="script.js"></script>
+<script>
+    requireAuth();
+    showUserEmail();
+</script>
+</body>
+</html>

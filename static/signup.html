@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureFS — Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <span class="header-logo">SecureFS</span>
+</header>
+
+<div class="container" style="margin-top: 80px;">
+    <p class="page-label">Create Account</p>
+    <h1>Sign Up</h1>
+
+    <div class="divider"></div>
+
+    <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                  text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+        Email
+    </label>
+    <input type="email" id="email" placeholder="you@example.com"
+        style="width:100%;padding:10px 12px;border:1px solid var(--grey-200);
+               font-family:var(--mono);font-size:12px;outline:none;
+               margin-bottom:12px;background:var(--white);">
+
+    <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                  text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+        Password
+    </label>
+    <input type="password" id="password" placeholder="Min 6 characters"
+        style="width:100%;padding:10px 12px;border:1px solid var(--grey-200);
+               font-family:var(--mono);font-size:12px;outline:none;
+               margin-bottom:20px;background:var(--white);">
+
+    <button class="btn btn-primary" id="signupBtn" onclick="signup()">Create Account</button>
+
+    <p id="status" style="font-family:var(--mono);font-size:11px;color:var(--grey-600);
+                           text-align:center;margin-top:14px;min-height:20px;"></p>
+
+    <div class="divider"></div>
+
+    <p style="font-family:var(--mono);font-size:11px;color:var(--grey-400);text-align:center;">
+        Already have an account?
+        <a href="login.html"
+           style="color:var(--black);text-decoration:none;border-bottom:1px solid var(--grey-400);">
+            Sign In
+        </a>
+    </p>
+</div>
+
+<script>
+    // Use let so they can be reassigned after /config fetch
+    let SUPABASE_URL = "";
+    let SUPABASE_ANON_KEY = "";
+
+    async function init() {
+        try {
+            const res = await fetch("/config");
+            const config = await res.json();
+            SUPABASE_URL = config.supabase_url;
+            SUPABASE_ANON_KEY = config.supabase_anon_key;
+        } catch (e) {
+            document.getElementById("status").innerText = "Cannot reach server.";
+        }
+    }
+
+    async function signup() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const status = document.getElementById("status");
+        const btn = document.getElementById("signupBtn");
+
+        if (!email || !password) { status.innerText = "Email and password required."; return; }
+        if (password.length < 6) { status.innerText = "Password must be at least 6 characters."; return; }
+
+        btn.disabled = true;
+        btn.innerText = "Creating account...";
+        status.innerText = "";
+
+        try {
+            await init(); // load config before making auth request
+
+            const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_ANON_KEY
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                status.innerText = data.error_description || data.msg || "Signup failed";
+                return;
+            }
+
+            status.innerText = "✓ Account created! Check your email to confirm, then sign in.";
+            setTimeout(() => window.location.href = "login.html", 2000);
+
+        } catch (e) {
+            status.innerText = "Network error: " + e.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Create Account";
+        }
+    }
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "Enter") signup();
+    });
+</script>
+</body>
+</html>

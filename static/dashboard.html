@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — SecureFS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <span class="header-logo">SecureFS</span>
+    <nav class="header-nav">
+        <a href="index.html">Upload</a>
+        <a href="dashboard.html">Dashboard</a>
+        <span id="userEmail" style="color:var(--grey-400);font-family:var(--mono);font-size:11px;"></span>
+        <a href="#" onclick="logout()" style="color:var(--grey-600);">Sign Out</a>
+    </nav>
+</header>
+
+<div class="container">
+    <p class="page-label">File Vault</p>
+    <h1>Encrypted Files</h1>
+
+    <div class="refresh-row">
+        <span class="section-label">Your files</span>
+        <button class="btn btn-ghost btn-sm" onclick="loadFiles()">↻ Refresh</button>
+    </div>
+
+    <ul id="fileList">
+        <li class="empty-state">Loading...</li>
+    </ul>
+
+    <a href="index.html" class="footer-link">← Back to Upload</a>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+     z-index:100; align-items:center; justify-content:center;">
+    <div style="background:var(--white); border:1px solid var(--grey-200);
+                padding:36px; width:400px; max-width:90vw;">
+        <p class="page-label">Share File</p>
+        <h1 style="font-size:18px; margin-bottom:24px;">Create Share Link</h1>
+
+        <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                      text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+            Password
+        </label>
+        <input type="password" id="sharePassword" placeholder="Set a password for the recipient"
+            style="width:100%;padding:10px 12px;border:1px solid var(--grey-200);
+                   font-family:var(--mono);font-size:12px;outline:none;margin-bottom:16px;">
+
+        <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                      text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+            Expires in
+        </label>
+        <select id="shareExpiry"
+            style="width:100%;padding:10px 12px;border:1px solid var(--grey-200);
+                   font-family:var(--mono);font-size:12px;outline:none;
+                   margin-bottom:20px;background:var(--white);">
+            <option value="1">1 hour</option>
+            <option value="24" selected>24 hours</option>
+            <option value="72">3 days</option>
+            <option value="168">7 days</option>
+        </select>
+
+        <div class="divider"></div>
+
+        <div id="shareResult" style="display:none; margin-bottom:16px;">
+            <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                          text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+                Share Link (send password separately)
+            </label>
+            <div style="display:flex;gap:8px;">
+                <input type="text" id="shareLink" readonly
+                    style="flex:1;padding:8px 10px;border:1px solid var(--grey-200);
+                           font-family:var(--mono);font-size:11px;outline:none;
+                           background:var(--grey-100);color:var(--black);">
+                <button class="btn btn-ghost btn-sm" onclick="copyLink()">Copy</button>
+            </div>
+            <p id="copyStatus" style="font-family:var(--mono);font-size:10px;
+                                       color:var(--grey-400);margin-top:6px;"></p>
+        </div>
+
+        <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary" style="flex:1" id="generateBtn" onclick="createShareLink()">
+                Generate Link
+            </button>
+            <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        </div>
+
+        <p id="shareStatus" style="font-family:var(--mono);font-size:11px;
+                                    color:var(--grey-600);text-align:center;margin-top:12px;"></p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    requireAuth();
+    showUserEmail();
+
+    let currentShareFile = null;
+
+    function openShareModal(filename) {
+        currentShareFile = filename;
+        document.getElementById("shareModal").style.display = "flex";
+        document.getElementById("sharePassword").value = "";
+        document.getElementById("shareResult").style.display = "none";
+        document.getElementById("shareStatus").innerText = "";
+        document.getElementById("copyStatus").innerText = "";
+        document.getElementById("generateBtn").disabled = false;
+        document.getElementById("generateBtn").innerText = "Generate Link";
+    }
+
+    function closeModal() {
+        document.getElementById("shareModal").style.display = "none";
+        currentShareFile = null;
+    }
+
+    async function createShareLink() {
+        const password = document.getElementById("sharePassword").value;
+        const expires_hours = document.getElementById("shareExpiry").value;
+        const status = document.getElementById("shareStatus");
+        const btn = document.getElementById("generateBtn");
+
+        if (!password) { status.innerText = "Password is required."; return; }
+
+        btn.disabled = true;
+        btn.innerText = "Generating...";
+        status.innerText = "";
+
+        try {
+            const res = await fetch(`${API_URL}/share/create/${currentShareFile}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...authHeaders()
+                },
+                body: JSON.stringify({ password, expires_hours: parseInt(expires_hours) })
+            });
+
+            const data = await res.json();
+
+            if (res.status === 401) { logout(); return; }
+            if (!res.ok) { status.innerText = data.detail || "Failed to generate link"; return; }
+
+            document.getElementById("shareLink").value = data.share_url;
+            document.getElementById("shareResult").style.display = "block";
+            status.innerText = "✓ Send the password to the recipient separately";
+
+        } catch (e) {
+            status.innerText = "Error: " + e.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Generate Link";
+        }
+    }
+
+    function copyLink() {
+        const link = document.getElementById("shareLink").value;
+        navigator.clipboard.writeText(link).then(() => {
+            document.getElementById("copyStatus").innerText = "✓ Copied to clipboard";
+        });
+    }
+
+    document.getElementById("shareModal").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    loadFiles();
+</script>
+</body>
+</html>

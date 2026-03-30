@@ -1,0 +1,316 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: #0a0a0a;
+    --white: #fafafa;
+    --grey-100: #d4d4d4;
+    --grey-200: #b8b8b8;
+    --grey-400: #5a5a5a;
+    --grey-600: #2e2e2e;
+    --grey-800: #1a1a1a;
+    --radius: 2px;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+}
+
+body {
+    font-family: var(--sans);
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    border-bottom: 1px solid var(--grey-200);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    background: var(--white);
+    z-index: 10;
+}
+
+.header-logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    text-decoration: none;
+}
+
+.header-nav {
+    margin-left: auto;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.header-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-600);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.header-nav a:hover {
+    color: var(--black);
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 48px;
+    padding: 48px 40px;
+    border: 1.5px solid var(--grey-400);
+    background: var(--white);
+}
+
+.page-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-600);
+    margin-bottom: 8px;
+}
+
+h1 {
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--black);
+    margin-bottom: 36px;
+    letter-spacing: -0.02em;
+}
+
+.divider {
+    height: 1px;
+    background: var(--grey-400);
+    margin: 28px 0;
+}
+
+.file-zone {
+    border: 1.5px dashed var(--grey-600);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.file-zone:hover {
+    border-color: var(--black);
+    background: var(--grey-100);
+}
+
+.file-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.file-zone-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.file-zone-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--grey-600);
+    text-transform: uppercase;
+}
+
+.file-zone-sub {
+    font-size: 11px;
+    color: var(--grey-400);
+    margin-top: 4px;
+}
+
+#fileName {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--black);
+    margin-top: 8px;
+    min-height: 16px;
+    text-align: center;
+}
+
+button, .btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius);
+    transition: background 0.15s, color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--black);
+    color: var(--white);
+    padding: 12px 24px;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    background: var(--grey-800);
+}
+
+.btn-primary:disabled {
+    background: var(--grey-400);
+    color: var(--white);
+    cursor: not-allowed;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--grey-600);
+    padding: 8px 14px;
+    border: 1px solid var(--grey-400);
+}
+
+.btn-ghost:hover {
+    background: var(--grey-100);
+    color: var(--black);
+    border-color: var(--black);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 10px;
+}
+
+#status {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--grey-600);
+    text-align: center;
+    min-height: 20px;
+    margin-top: 14px;
+    letter-spacing: 0.05em;
+}
+
+.section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--grey-600);
+    margin-bottom: 12px;
+}
+
+ul#fileList {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+ul#fileList li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--grey-100);
+    gap: 10px;
+}
+
+ul#fileList li:hover {
+    background: var(--grey-200);
+}
+
+.file-name {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--black);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.refresh-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 32px 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--grey-600);
+    letter-spacing: 0.1em;
+}
+
+.footer-link {
+    display: block;
+    text-align: center;
+    margin-top: 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-800);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.footer-link:hover {
+    color: var(--black);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--grey-400);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+}

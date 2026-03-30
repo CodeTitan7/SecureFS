@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureFS — Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="header">
+    <span class="header-logo">SecureFS</span>
+</header>
+
+<div class="container" style="margin-top: 80px;">
+    <p class="page-label">Welcome</p>
+    <h1>Sign In</h1>
+
+    <div class="divider"></div>
+
+    <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                  text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+        Email
+    </label>
+    <input type="email" id="email" placeholder="you@example.com"
+        style="width:100%;padding:10px 12px;border:1px solid var(--grey-200);
+               font-family:var(--mono);font-size:12px;outline:none;
+               margin-bottom:12px;background:var(--white);">
+
+    <label style="font-family:var(--mono);font-size:10px;letter-spacing:0.15em;
+                  text-transform:uppercase;color:var(--grey-600);display:block;margin-bottom:6px;">
+        Password
+    </label>
+    <input type="password" id="password" placeholder="Password"
+        style="width:100%;padding:10px 12px;border:1px solid var(--grey-200);
+               font-family:var(--mono);font-size:12px;outline:none;
+               margin-bottom:20px;background:var(--white);">
+
+    <button class="btn btn-primary" id="loginBtn" onclick="login()">Sign In</button>
+
+    <p id="status" style="font-family:var(--mono);font-size:11px;color:var(--grey-600);
+                           text-align:center;margin-top:14px;min-height:20px;"></p>
+
+    <div class="divider"></div>
+
+    <p style="font-family:var(--mono);font-size:11px;color:var(--grey-400);text-align:center;">
+        No account?
+        <a href="signup.html"
+           style="color:var(--black);text-decoration:none;border-bottom:1px solid var(--grey-400);">
+            Sign Up
+        </a>
+    </p>
+</div>
+
+<script>
+    // Use let so they can be reassigned after /config fetch
+    let SUPABASE_URL = "";
+    let SUPABASE_ANON_KEY = "";
+
+    // If already logged in redirect straight to upload page
+    if (localStorage.getItem("sb_token")) window.location.href = "index.html";
+
+    async function init() {
+        try {
+            const res = await fetch("/config");
+            const config = await res.json();
+            SUPABASE_URL = config.supabase_url;
+            SUPABASE_ANON_KEY = config.supabase_anon_key;
+        } catch (e) {
+            document.getElementById("status").innerText = "Cannot reach server.";
+        }
+    }
+
+    async function login() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const status = document.getElementById("status");
+        const btn = document.getElementById("loginBtn");
+
+        if (!email || !password) { status.innerText = "Email and password required."; return; }
+
+        btn.disabled = true;
+        btn.innerText = "Signing in...";
+        status.innerText = "";
+
+        try {
+            await init(); // load config before making auth request
+
+            const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_ANON_KEY
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                status.innerText = data.error_description || data.msg || "Login failed";
+                return;
+            }
+
+            localStorage.setItem("sb_token", data.access_token);
+            localStorage.setItem("sb_refresh", data.refresh_token);
+            localStorage.setItem("sb_email", email);
+            window.location.href = "index.html";
+
+        } catch (e) {
+            status.innerText = "Network error: " + e.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Sign In";
+        }
+    }
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "Enter") login();
+    });
+</script>
+</body>
+</html>
