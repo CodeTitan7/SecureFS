@@ -65,10 +65,14 @@ Open `http://127.0.0.1:8000` in your browser.
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| `POST` | `/auth/login` | Get access token | No |
-| `POST` | `/files/upload` | Upload and encrypt a file | Yes |
-| `GET` | `/files/list` | List uploaded files | Yes |
-| `GET` | `/files/download/{filename}` | Download and decrypt a file | Yes |
-| `DELETE` | `/files/delete/{filename}` | Delete a file | Yes |
+| `GET` | `/` | Redirect to login page | No |
+| `GET` | `/config` | Supabase URL and anon key for frontend | No |
+| `POST` | `/encrypt` | Upload, encrypt, and store a file | Yes |
+| `GET` | `/files` | List encrypted files for the authenticated user | Yes |
+| `GET` | `/decrypt/{filename}` | Decrypt and stream file to owner | Yes |
+| `GET` | `/download/{filename}` | Download raw encrypted file | Yes |
+| `POST` | `/share/create/{filename}` | Generate a password-protected share link | Yes |
+| `GET` | `/share/{token}` | Serve password entry page for shared file | No |
+| `POST` | `/share/{token}` | Verify password and stream decrypted file | No |
 
 Authenticated endpoints require `Authorization: Bearer <token>`.
